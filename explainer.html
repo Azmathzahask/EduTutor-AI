@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EduTutor AI - Adaptive Explainer & Knowledge Constellation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 1.25rem;
+      box-shadow: 0 8px 32px rgba(200, 180, 80, 0.10);
+      padding: 2rem 2.5rem 2.5rem 2.5rem;
+    }
+    h1 {
+      color: #bfa100;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    label, select, button {
+      font-size: 1rem;
+    }
+    select, button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid #ffe800;
+      margin-right: 0.5rem;
+      background: #fffde7;
+      color: #222;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    button {
+      background: #ffe800;
+      color: #111;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #ffd600;
+    }
+    .explanation-box {
+      background: #fffde7;
+      border: 1px solid #ffe800;
+      border-radius: 0.75rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.08rem;
+      font-weight: 500;
+      color: #222;
+      box-shadow: 0 2px 8px #ffe80022;
+    }
+    .constellation {
+      margin-bottom: 1.5rem;
+    }
+    .constellation-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.7rem;
+    }
+    .constellation-label {
+      width: 160px;
+      font-weight: 600;
+    }
+    .stars {
+      font-size: 1.2rem;
+      color: #ffe800;
+      margin-right: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+    .percent {
+      color: #888;
+      font-size: 0.98rem;
+    }
+    .mission-card {
+      background: #fffde7;
+      border: 1px solid #ffe800;
+      border-radius: 0.75rem;
+      padding: 0.8rem 1.2rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      color: #222;
+      box-shadow: 0 2px 8px #ffe80022;
+    }
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      background: #fffde7;
+      border: 1px solid #ffe800;
+      border-radius: 0.75rem 0.75rem 0 0;
+      padding: 0.7rem 1.5rem;
+      font-weight: 700;
+      color: #bfa100;
+      cursor: pointer;
+      border-bottom: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn.active, .tab-btn:focus {
+      background: #ffe800;
+      color: #111;
+      outline: none;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+    @media (max-width: 600px) {
+      .container { padding: 1rem 0.5rem; }
+      .constellation-label { width: 100px; }
+      .tab-btn { padding: 0.5rem 0.7rem; font-size: 0.95rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>EduTutor AI</h1>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="subject-tab">1. Subject</button>
+      <button class="tab-btn" data-tab="topic-tab">2. Topic</button>
+      <button class="tab-btn" data-tab="explain-tab">3. Explain</button>
+    </div>
+
+    <!-- Tab 1: Subject -->
+    <div class="tab-content active" id="subject-tab">
+      <form id="subject-form">
+        <label for="subject">Choose Subject:</label>
+        <select id="subject" required>
+          <option value="" disabled selected>Select subject</option>
+          <option value="Maths">Maths</option>
+          <option value="Biology">Biology</option>
+        </select>
+        <button type="submit">Next</button>
+      </form>
+    </div>
+
+    <!-- Tab 2: Topic -->
+    <div class="tab-content" id="topic-tab">
+      <form id="topic-form">
+        <label for="topic">Choose Topic:</label>
+        <select id="topic" required>
+          <option value="" disabled selected>Select topic</option>
+        </select>
+        <button type="submit">Next</button>
+      </form>
+    </div>
+
+    <!-- Tab 3: Explain -->
+    <div class="tab-content" id="explain-tab">
+      <form id="explainer-form">
+        <label for="style">Explanation Style:</label>
+        <select id="style">
+          <option value="simple">Simple</option>
+          <option value="analogy">Analogy</option>
+          <option value="advanced">Advanced</option>
+        </select>
+        <button type="submit">Explain</button>
+      </form>
+      <div id="explanation" class="explanation-box"></div>
+    </div>
+
+    <!-- Knowledge Constellation Section -->
+    <div class="section">
+      <h2>Knowledge Constellation</h2>
+      <div id="constellation" class="constellation"></div>
+    </div>
+
+    <!-- Gap-Filling Missions Section -->
+    <div class="section">
+      <h2>Gap-Filling Missions</h2>
+      <div id="missions"></div>
+    </div>
+  </div>
+
+  <script>
+    // Data structure for subjects and topics
+    const subjectTopics = {
+      "Maths": ["Dot Product", "Vector Product"],
+      "Biology": ["Respiratory System"]
+    };
+
+    // Explanations database
+    const explanations = {
+      "Dot Product": {
+        simple: "The dot product multiplies two vectors and gives a single number.",
+        analogy: "Think of the dot product like finding how much two arrows point in the same direction.",
+        advanced: "The dot product of vectors A and B is |A||B|cos(θ), where θ is the angle between them.",
+        indepth: `
+          <b>In-Depth Explanation:</b><br>
+          The dot product (also called scalar product) is an algebraic operation that takes two equal-length sequences of numbers (usually coordinate vectors) and returns a single number. 
+          <br><br>
+          <b>Mathematical Formula:</b><br>
+          <code>A · B = |A||B|cos(θ) = a₁b₁ + a₂b₂ + ... + aₙbₙ</code><br>
+          where θ is the angle between vectors A and B.<br><br>
+          <b>Geometric Meaning:</b><br>
+          The dot product measures how much one vector extends in the direction of another. If the vectors are perpendicular, the dot product is zero. If they are parallel and in the same direction, it is maximized.<br><br>
+          <b>Applications:</b><br>
+          - Calculating work done (force · displacement)<br>
+          - Finding the angle between vectors<br>
+          - Checking orthogonality (dot product = 0 means vectors are perpendicular)
+        `
+      },
+      "Vector Product": {
+        simple: "The vector product (cross product) gives a new vector perpendicular to both input vectors.",
+        analogy: "Imagine turning a screwdriver: the force and direction combine to make it spin in a new direction.",
+        advanced: "The cross product of A and B is a vector with magnitude |A||B|sin(θ) and direction by the right-hand rule.",
+        indepth: `
+          <b>In-Depth Explanation:</b><br>
+          The vector product (cross product) of two vectors in three-dimensional space results in another vector that is perpendicular to both.<br><br>
+          <b>Mathematical Formula:</b><br>
+          <code>A × B = |A||B|sin(θ) n̂</code><br>
+          where n̂ is a unit vector perpendicular to both A and B, and θ is the angle between them.<br>
+          <br>
+          <b>Component Form:</b><br>
+          <code>
+          A × B = (a₂b₃ - a₃b₂)i + (a₃b₁ - a₁b₃)j + (a₁b₂ - a₂b₁)k
+          </code><br><br>
+          <b>Geometric Meaning:</b><br>
+          The magnitude of the cross product equals the area of the parallelogram formed by the two vectors.<br><br>
+          <b>Applications:</b><br>
+          - Calculating torque<br>
+          - Finding normal vectors to surfaces<br>
+          - Describing rotational motion
+        `
+      },
+      "Respiratory System": {
+        simple: "The respiratory system helps you breathe in oxygen and breathe out carbon dioxide.",
+        analogy: "Think of your lungs as balloons that fill up with air and let it out.",
+        advanced: "The respiratory system includes organs and structures for gas exchange, such as the trachea, bronchi, lungs, and alveoli, facilitating oxygen uptake and carbon dioxide removal.",
+        indepth: `
+          <b>In-Depth Explanation:</b><br>
+          The respiratory system is a network of organs and tissues that help you breathe. It includes the nose, pharynx, larynx, trachea, bronchi, bronchioles, and lungs.<br><br>
+          <b>How it works:</b><br>
+          - <b>Inhalation:</b> Air enters through the nose/mouth, travels down the trachea, and into the lungs.<br>
+          - <b>Gas Exchange:</b> In the alveoli (tiny air sacs), oxygen passes into the blood and carbon dioxide moves from the blood to the alveoli.<br>
+          - <b>Exhalation:</b> Carbon dioxide is expelled from the lungs.<br><br>
+          <b>Importance:</b><br>
+          - Supplies oxygen for cellular respiration<br>
+          - Removes waste carbon dioxide<br>
+          <b>Diseases:</b> Asthma, bronchitis, pneumonia, and COPD affect the respiratory system's efficiency.
+        `
+      }
+    };
+
+    // Mock student mastery data
+    const studentMastery = {
+      "Dot Product": 0.7,
+      "Vector Product": 0.4,
+      "Respiratory System": 0.6
+    };
+
+    // Gap-Filling Missions generator
+    function getGapFillingMissions(mastery) {
+      return Object.entries(mastery)
+        .filter(([concept, score]) => score < 0.8)
+        .map(([concept]) => ({
+          concept,
+          mission: `Practice problems on <b>${concept}</b> to improve your understanding.`
+        }));
+    }
+
+    // Tab navigation logic
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    function activateTab(tabId) {
+      tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+      tabContents.forEach(tab => tab.classList.toggle('active', tab.id === tabId));
+    }
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activateTab(btn.dataset.tab);
+      });
+    });
+
+    // Subject selection logic
+    document.getElementById('subject-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject = document.getElementById('subject').value;
+      // Populate topics
+      const topicSelect = document.getElementById('topic');
+      topicSelect.innerHTML = '<option value="" disabled selected>Select topic</option>';
+      subjectTopics[subject].forEach(topic => {
+        const opt = document.createElement('option');
+        opt.value = topic;
+        opt.textContent = topic;
+        topicSelect.appendChild(opt);
+      });
+      activateTab('topic-tab');
+    });
+
+    // Topic selection logic
+    let selectedTopic = null;
+    document.getElementById('topic-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      selectedTopic = document.getElementById('topic').value;
+      // Set default explanation
+      let defaultExp = explanations[selectedTopic]?.simple || "No explanation available.";
+      if (explanations[selectedTopic]?.indepth) {
+        defaultExp += `<br><br><details><summary style="cursor:pointer;color:#bfa100;font-weight:600;">In-Depth Explanation</summary><div style="margin-top:0.7rem;">${explanations[selectedTopic].indepth}</div></details>`;
+      }
+      document.getElementById('explanation').innerHTML = defaultExp;
+      activateTab('explain-tab');
+    });
+
+    // Adaptive Explainer logic
+    document.getElementById('explainer-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const style = document.getElementById('style').value;
+      if (!selectedTopic) {
+        document.getElementById('explanation').innerHTML = "Please select a topic first.";
+        return;
+      }
+      let explanation = explanations[selectedTopic][style] || explanations[selectedTopic].simple;
+      if (explanations[selectedTopic].indepth) {
+        explanation += `<br><br><details><summary style="cursor:pointer;color:#bfa100;font-weight:600;">In-Depth Explanation</summary><div style="margin-top:0.7rem;">${explanations[selectedTopic].indepth}</div></details>`;
+      }
+      document.getElementById('explanation').innerHTML = explanation;
+    });
+
+    // Show Knowledge Constellation
+    function showKnowledgeConstellation(mastery) {
+      const container = document.getElementById('constellation');
+      container.innerHTML = '';
+      Object.entries(mastery).forEach(([concept, score]) => {
+        const stars = "★".repeat(Math.round(score * 5)).padEnd(5, "☆");
+        const percent = Math.round(score * 100);
+        const bar = document.createElement('div');
+        bar.className = 'constellation-bar';
+        bar.innerHTML = `
+          <span class="constellation-label">${concept}</span>
+          <span class="stars">${stars}</span>
+          <span class="percent">(${percent}%)</span>
+        `;
+        container.appendChild(bar);
+      });
+    }
+
+    // Show Gap-Filling Missions
+    function showGapFillingMissions(mastery) {
+      const missions = getGapFillingMissions(mastery);
+      const container = document.getElementById('missions');
+      container.innerHTML = '';
+      if (missions.length === 0) {
+        container.innerHTML = '<div class="mission-card" style="background:#e8f5e9;border-color:#4CAF50;">All concepts mastered! 🎉</div>';
+        return;
+      }
+      missions.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'mission-card';
+        card.innerHTML = m.mission;
+        container.appendChild(card);
+      });
+    }
+
+    // Initial render
+    showKnowledgeConstellation(studentMastery);howKnowledgeConstellation(studentMastery);
+    showGapFillingMissions(studentMastery);    showGapFillingMissions(studentMastery);
+  </script>
+</body>
+</html>

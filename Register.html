@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - EduTutor AI</title>
+  <style>
+    :root {
+      --color-bg: #fff;
+      --color-text: #111;
+      --color-yellow: #ffe800;
+      --color-yellow-dark: #ffd600;
+      --border-radius: 1.25rem;
+      --input-height: 44px;
+      --input-width: 90%;
+      --max-width: 400px;
+      --transition: 0.2s cubic-bezier(.4,0,.2,1);
+    }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: "Inter", Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Decorative background icons */
+    .bg-icon {
+      position: absolute;
+      opacity: 0.18;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      /*filter: grayscale(0.7) brightness(0.7) contrast(1.1);*/
+    }
+    .bg-bulb {
+      top: 8%;
+      left: 6%;
+      width: 70px;
+      height: 70px;
+    }
+    .bg-cloud {
+      top: 70%;
+      left: 10%;
+      width: 90px;
+      height: 60px;
+    }
+    .bg-student {
+      top: 20%;
+      right: 8%;
+      width: 80px;
+      height: 80px;
+    }
+    .bg-bulb2 {
+      bottom: 10%;
+      right: 12%;
+      width: 60px;
+      height: 60px;
+    }
+    .bg-cloud2 {
+      top: 40%;
+      right: 2%;
+      width: 70px;
+      height: 50px;
+    }
+    .register-container {
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 32px rgba(200, 180, 80, 0.10);
+      max-width: var(--max-width);
+      width: 100%;
+      padding: 2.5rem 2rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #eee;
+      z-index: 1;
+      position: relative;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #bfa100;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 8px #ffe80044;
+      text-decoration: none;
+      user-select: none;
+    }
+    h2 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-text);
+      text-align: center;
+    }
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    label {
+      width: var(--input-width);
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      color: var(--color-text);
+      font-size: 1rem;
+      text-align: left;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: var(--input-width);
+      height: var(--input-height);
+      padding: 0 1rem;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: 1.5px solid #ccc;
+      margin-bottom: 1.1rem;
+      background: #fff;
+      color: var(--color-text);
+      transition: border-color var(--transition);
+      box-sizing: border-box;
+    }
+    input:focus {
+      border-color: var(--color-yellow);
+      outline: none;
+      background: #fffde7;
+    }
+    .submit-btn {
+      width: var(--input-width);
+      background: var(--color-yellow);
+      color: #111;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0.85rem 0;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px #ffe80055;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .submit-btn:hover,
+    .submit-btn:focus {
+      background: var(--color-yellow-dark);
+      transform: scale(1.03);
+      outline: none;
+    }
+    .register-note {
+      text-align: center;
+      font-size: 1rem;
+      color: #111;
+      margin-top: 1rem;
+    }
+    .register-note a {
+      color: #bfa100;
+      text-decoration: underline;
+      font-weight: 700;
+      margin-left: 0.25rem;
+      transition: color var(--transition);
+    }
+    .register-note a:hover,
+    .register-note a:focus {
+      color: #ffd600;
+      outline: none;
+    }
+    @media (max-width: 480px) {
+      .register-container {
+        padding: 1.5rem 0.5rem;
+      }
+      label, input, .submit-btn {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Decorative background icons -->
+  <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="" class="bg-icon bg-bulb" />
+  <img src="https://cdn-icons-png.flaticon.com/512/4144/4144774.png" alt="" class="bg-icon bg-student" />
+  <img src="https://cdn-icons-png.flaticon.com/512/4144/4144337.png" alt="" class="bg-icon bg-cloud" />
+  <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="" class="bg-icon bg-bulb2" />
+  <img src="https://cdn-icons-png.flaticon.com/512/4144/4144337.png" alt="" class="bg-icon bg-cloud2" />
+
+  <div class="register-container">
+    <div class="logo">EduTutor AI</div>
+    <h2>Create Account</h2>
+    <form onsubmit="window.location.href='home.html'; return false;">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" autocomplete="name" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" autocomplete="username" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="new-password" required />
+
+      <button type="submit" class="submit-btn">Register</button>
+    </form>
+    <div class="register-note">
+      Already have an account?
+      <a href="signin.html">Sign In</a>
+    </div>
+  </div>
+</body>
+</html>
+

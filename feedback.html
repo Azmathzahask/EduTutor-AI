@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Feedback - EduTutor AI</title>
+    <style>
+        :root {
+            --color-bg: #fff;
+            --color-text-primary: #111;
+            --color-yellow: #ffe800;
+            --color-yellow-dark: #ffd600;
+            --color-success: #4CAF50;
+            --color-warning: #FF9800;
+            --color-danger: #F44336;
+            --color-info: #2196F3;
+            --border-radius: 1.25rem;
+            --shadow-light: 0 8px 32px rgba(200, 180, 80, 0.10);
+            --transition-fast: 0.3s cubic-bezier(.4,0,.2,1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f8f9fa;
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: var(--color-bg);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow-light);
+            border-bottom: 2px solid var(--color-yellow);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: var(--color-text-primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--color-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-light);
+            border: 1px solid #e0e0e0;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(200, 180, 80, 0.15);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--color-text-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--color-yellow);
+            padding-bottom: 0.5rem;
+        }
+
+        .performance-overview {
+            grid-column: 1 / -1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-success), var(--color-yellow));
+            transition: width 0.8s ease;
+            border-radius: 6px;
+        }
+
+        .feedback-item {
+            background: #f8f9fa;
+            border-left: 4px solid var(--color-info);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            transition: all var(--transition-fast);
+        }
+
+        .feedback-item.success {
+            border-left-color: var(--color-success);
+            background: #f1f8e9;
+        }
+
+        .feedback-item.warning {
+            border-left-color: var(--color-warning);
+            background: #fff3e0;
+        }
+
+        .feedback-item.danger {
+            border-left-color: var(--color-danger);
+            background: #ffebee;
+        }
+
+        .feedback-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feedback-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-content {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-suggestion {
+            font-style: italic;
+            color: #555;
+        }
+
+        .skill-badge {
+            display: inline-block;
+            background: var(--color-yellow);
+            color: #111;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-yellow-dark);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .learning-path {
+            background: linear-gradient(135deg, #fff 0%, #fffde7 100%);
+            border: 2px solid var(--color-yellow);
+        }
+
+        .path-step {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background: var(--color-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+            transition: all var(--transition-fast);
+        }
+
+        .path-step:hover {
+            background: #fffde7;
+            border-color: var(--color-yellow);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--color-yellow);
+            color: #111;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-yellow);
+            color: #111;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: var(--color-yellow-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 232, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: var(--color-text-primary);
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        .ai-insight {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid var(--color-info);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-insight::before {
+            content: "🤖";
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid var(--color-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--color-bg);
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            color: var(--color-text-primary);
+        }
+
+        .filter-tab.active {
+            background: var(--color-yellow);
+            color: #111;
+            font-weight: 700;
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: #f8f9fa;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(255,255,255,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s;
+        }
+        .loading-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .loading-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffe800;
+            animation: jump 0.7s infinite;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        @keyframes jump {
+            0%, 100% { transform: translateY(0);}
+            50% { transform: translateY(-18px);}
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <script>
+        // Show loader for 3 seconds on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }, 3000);
+        });
+        // Show loader immediately on navigation away
+        window.addEventListener('beforeunload', function () {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        });
+    </script>
+</head>
+<body>
+    <div id="loading-overlay" class="loading-overlay" style="display: flex;">
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+    </div>
+    <div class="header">
+        <div class="container">
+            <h1>📊 Personalized Feedback Dashboard</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card performance-overview">
+            <h3>📈 Performance Overview</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" id="overallScore">87</span>
+                    <span class="stat-label">Overall Score</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="completedLessons">24</span>
+                    <span class="stat-label">Lessons Completed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="skillsImproved">12</span>
+                    <span class="stat-label">Skills Improved</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="weeklyProgress">+15%</span>
+                    <span class="stat-label">Weekly Progress</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h4>Subject Performance</h4>
+                <div style="margin: 1rem 0;">
+                    <strong>Mathematics</strong>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                    <small>85% - Excellent progress in algebra and geometry</small>
+                </div>
+                <div style="margin: 1rem 0;">
+                    <strong>Science</strong>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%;"></div>
+                    </div>
+                    <small>78% - Good understanding of physics concepts</small>
+                </div>
+                <div style="margin: 1rem 0;">
+                    <strong>English</strong>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%;"></div>
+                    </div>
+                    <small>92% - Outstanding reading comprehension skills</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>🎯 Recent Feedback</h3>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterFeedback('all')">All</button>
+                    <button class="filter-tab" onclick="filterFeedback('positive')">Positive</button>
+                    <button class="filter-tab" onclick="filterFeedback('improvement')">Needs Work</button>
+                </div>
+                
+                <div id="feedbackContainer">
+                    <div class="feedback-item success" data-type="positive">
+                        <div class="feedback-meta">Mathematics • 2 hours ago</div>
+                        <div class="feedback-content">Excellent work on quadratic equations! Your problem-solving approach shows strong analytical thinking.</div>
+                        <div class="feedback-suggestion">💡 Try tackling more complex word problems to further strengthen your skills.</div>
+                    </div>
+                    
+                    <div class="feedback-item warning" data-type="improvement">
+                        <div class="feedback-meta">Science • 1 day ago</div>
+                        <div class="feedback-content">Your understanding of chemical reactions is developing well, but you struggled with balancing equations.</div>
+                        <div class="feedback-suggestion">📚 Review the law of conservation of mass and practice with simpler equations first.</div>
+                    </div>
+                    
+                    <div class="feedback-item success" data-type="positive">
+                        <div class="feedback-meta">English • 2 days ago</div>
+                        <div class="feedback-content">Your essay on climate change demonstrated excellent research skills and clear argumentation.</div>
+                        <div class="feedback-suggestion">🌟 Consider exploring more diverse perspectives to add depth to your analysis.</div>
+                    </div>
+                    
+                    <div class="feedback-item danger" data-type="improvement">
+                        <div class="feedback-meta">Mathematics • 3 days ago</div>
+                        <div class="feedback-content">You're making calculation errors in geometry problems, particularly with area formulas.</div>
+                        <div class="feedback-suggestion">🎯 Let's schedule extra practice sessions focusing on basic formulas and careful calculation.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card ai-insight">
+                <h3>🤖 AI Learning Insights</h3>
+                <div class="feedback-item" style="background: rgba(255,255,255,0.8); border: none;">
+                    <div class="feedback-content"><strong>Learning Pattern Detected:</strong> You perform best during morning study sessions (9-11 AM) with 23% higher accuracy rates.</div>
+                </div>
+                
+                <div class="feedback-item" style="background: rgba(255,255,255,0.8); border: none;">
+                    <div class="feedback-content"><strong>Strength Identified:</strong> Visual learning is your preferred style. Problems with diagrams show 31% better completion rates.</div>
+                </div>
+                
+                <div class="feedback-item" style="background: rgba(255,255,255,0.8); border: none;">
+                    <div class="feedback-content"><strong>Recommendation:</strong> Based on your progress, you're ready for advanced algebra concepts. Consider the "Advanced Functions" module next.</div>
+                </div>
+                
+                <button class="btn" onclick="generateNewInsights()">Generate New Insights</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>🎯 Skill Development</h3>
+                <div style="margin: 1rem 0;">
+                    <strong>Strongest Skills:</strong><br>
+                    <span class="skill-badge">Reading Comprehension</span>
+                    <span class="skill-badge">Problem Solving</span>
+                    <span class="skill-badge">Critical Thinking</span>
+                </div>
+                
+                <div style="margin: 1rem 0;">
+                    <strong>Skills to Improve:</strong><br>
+                    <span class="skill-badge" style="background: #ffebee; color: #c62828;">Time Management</span>
+                    <span class="skill-badge" style="background: #ffebee; color: #c62828;">Formula Application</span>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="viewDetailedSkillAnalysis()">View Detailed Analysis</button>
+            </div>
+
+            <div class="card learning-path">
+                <h3>🛤 Personalized Learning Path</h3>
+                <div class="path-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Review Chemical Equations</div>
+                        <div class="step-description">Complete 5 balancing exercises</div>
+                    </div>
+                </div>
+                
+                <div class="path-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Practice Geometry Formulas</div>
+                        <div class="step-description">Focus on area and perimeter calculations</div>
+                    </div>
+                </div>
+                
+                <div class="path-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Advanced Reading Analysis</div>
+                        <div class="step-description">Analyze complex literary themes</div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="startLearningPath()">Start Next Step</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📊 Progress Analytics</h3>
+            <div class="chart-container" id="progressChart">
+                <div class="loading-spinner"></div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <button class="btn btn-secondary" onclick="toggleChartView()">Switch to Weekly View</button>
+                <button class="btn" onclick="exportProgress()">Export Progress Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Feedback Management System
+        class PersonalizedFeedbackSystem {
+            constructor() {
+                this.studentData = {
+                    id: 'student_123',
+                    name: 'Alex Johnson',
+                    grade: '10th',
+                    subjects: ['Mathematics', 'Science', 'English'],
+                    learningStyle: 'visual',
+                    performanceData: {}
+                };
+                this.feedbackHistory = [];
+                this.currentFilter = 'all';
+                this.init();
+            }
+
+            init() {
+                this.loadStudentProgress();
+                this.generateAIInsights();
+                this.updateDashboard();
+                this.simulateRealTimeUpdates();
+            }
+
+            // Load and process student performance data
+            loadStudentProgress() {
+                // Simulate API call to load student data
+                this.studentData.performanceData = {
+                    mathematics: { score: 85, trend: 'improving', weakAreas: ['geometry', 'statistics'] },
+                    science: { score: 78, trend: 'stable', weakAreas: ['chemistry', 'physics'] },
+                    english: { score: 92, trend: 'excellent', weakAreas: [] }
+                };
+            }
+
+            // Generate personalized feedback based on performance
+            generatePersonalizedFeedback(subject, performance, context) {
+                const feedback = {
+                    id: Date.now(),
+                    timestamp: new Date(),
+                    subject: subject,
+                    type: this.determineFeedbackType(performance),
+                    content: this.generateFeedbackContent(subject, performance, context),
+                    suggestions: this.generateActionableSuggestions(subject, performance),
+                    aiInsights: this.generateAIInsights(subject, performance)
+                };
+
+                this.feedbackHistory.push(feedback);
+                this.displayFeedback(feedback);
+                return feedback;
+            }
+
+            determineFeedbackType(performance) {
+                if (performance.score >= 85) return 'positive';
+                if (performance.score >= 70) return 'neutral';
+                return 'improvement';
+            }
+
+            generateFeedbackContent(subject, performance, context) {
+                const templates = {
+                    positive: [
+                        Outstanding work in ${subject}! Your ${context.skill} demonstrates mastery of the concepts.,
+                        Excellent progress in ${subject}. Your analytical approach shows deep understanding.,
+                        Great job on ${subject}! Your consistent effort is paying off with strong results.
+                    ],
+                    neutral: [
+                        Good work in ${subject}. Your understanding is developing well, with room for improvement in ${context.weakArea}.,
+                        Solid progress in ${subject}. Focus on ${context.weakArea} to reach the next level.,
+                        Your ${subject} skills are progressing steadily. Let's work on strengthening ${context.weakArea}.
+                    ],
+                    improvement: [
+                        Your ${subject} performance needs attention, particularly in ${context.weakArea}.,
+                        Let's focus on improving your ${subject} skills, especially ${context.weakArea}.,
+                        ${subject} requires more practice. Your main challenge area is ${context.weakArea}.
+                    ]
+                };
+
+                const type = this.determineFeedbackType(performance);
+                const templateArray = templates[type];
+                return templateArray[Math.floor(Math.random() * templateArray.length)];
+            }
+
+            generateActionableSuggestions(subject, performance) {
+                const suggestions = {
+                    mathematics: {
+                        positive: ['Try advanced problem sets', 'Explore real-world applications', 'Help peers with concepts'],
+                        neutral: ['Practice daily for 30 minutes', 'Use visual aids for complex problems', 'Review fundamentals'],
+                        improvement: ['Start with basic concepts', 'Use step-by-step guides', 'Schedule tutoring sessions']
+                    },
+                    science: {
+                        positive: ['Conduct independent experiments', 'Read scientific journals', 'Join science club'],
+                        neutral: ['Watch educational videos', 'Create concept maps', 'Practice lab techniques'],
+                        improvement: ['Review basic principles', 'Use flashcards for terminology', 'Attend study groups']
+                    },
+                    english: {
+                        positive: ['Read advanced literature', 'Write creative pieces', 'Analyze complex texts'],
+                        neutral: ['Expand vocabulary daily', 'Practice essay writing', 'Join discussion groups'],
+                        improvement: ['Read for 20 minutes daily', 'Use grammar apps', 'Start with shorter texts']
+                    }
+                };
+
+                const type = this.determineFeedbackType(performance);
+                const subjectSuggestions = suggestions[subject.toLowerCase()] || suggestions.mathematics;
+                return subjectSuggestions[type] || subjectSuggestions.neutral;
+            }
+
+            // AI-powered learning insights
+            generateAIInsights() {
+                const insights = [
+                    {
+                        type: 'learning_pattern',
+                        content: 'You perform best during morning study sessions (9-11 AM) with 23% higher accuracy rates.',
+                        confidence: 0.87
+                    },
+                    {
+                        type: 'learning_style',
+                        content: 'Visual learning is your preferred style. Problems with diagrams show 31% better completion rates.',
+                        confidence: 0.92
+                    },
+                    {
+                        type: 'readiness',
+                        content: 'Based on your progress, you\'re ready for advanced algebra concepts. Consider the "Advanced Functions" module next.',
+                        confidence: 0.79
+                    },
+                    {
+                        type: 'social_learning',
+                        content: 'Collaborative exercises boost your performance by 18%. Try more group study sessions.',
+                        confidence: 0.84
+                    }
+                ];
+
+                return insights;
+            }
+
+            // Adaptive learning path generation
+            generateLearningPath(studentData) {
+                const weakAreas = this.identifyWeakAreas(studentData);
+                const strongAreas = this.identifyStrongAreas(studentData);
+                
+                const path = [];
+                
+                // Address weak areas first
+                weakAreas.forEach((area, index) => {
+                    path.push({
+                        step: index + 1,
+                        title: Strengthen ${area.subject} - ${area.topic},
+                        description: Focus on ${area.specificSkills.join(', ')},
+                        estimatedTime: area.difficulty * 30, // minutes
+                        prerequisites: area.prerequisites || [],
+                        resources: this.getResourcesForTopic(area.subject, area.topic)
+                    });
+                });
+
+                // Build on strong areas
+                strongAreas.forEach((area, index) => {
+                    path.push({
+                        step: weakAreas.length + index + 1,
+                        title: Advanced ${area.subject} - ${area.topic},
+                        description: Explore advanced concepts in ${area.specificSkills.join(', ')},
+                        estimatedTime: 45,
+                        prerequisites: [Complete ${area.subject} fundamentals],
+                        resources: this.getAdvancedResourcesForTopic(area.subject, area.topic)
+                    });
+                });
+
+                return path;
+            }
+
+            identifyWeakAreas(studentData) {
+                // Analyze performance data to identify areas needing improvement
+                const weakAreas = [];
+                
+                Object.entries(studentData.performanceData).forEach(([subject, data]) => {
+                    if (data.score < 80) {
+                        data.weakAreas.forEach(area => {
+                            weakAreas.push({
+                                subject: subject,
+                                topic: area,
+                                score: data.score,
+                                difficulty: this.calculateDifficulty(data.score),
+                                specificSkills: this.getSkillsForTopic(subject, area),
+                                prerequisites: this.getPrerequisites(subject, area)
+                            });
+                        });
+                    }
+                });
+
+                return weakAreas.sort((a, b) => a.score - b.score); // Prioritize lowest scores
+            }
+
+            identifyStrongAreas(studentData) {
+                const strongAreas = [];
+                
+                Object.entries(studentData.performanceData).forEach(([subject, data]) => {
+                    if (data.score > 85) {
+                        strongAreas.push({
+                            subject: subject,
+                            topic: 'Advanced Concepts',
+                            score: data.score,
+                            specificSkills: this.getAdvancedSkillsForSubject(subject)
+                        });
+                    }
+                });
+
+                return strongAreas;
+            }
+
+            calculateDifficulty(score) {
+                if (score < 60) return 3; // High difficulty
+                if (score < 75) return 2; // Medium difficulty
+                return 1; // Low difficulty
+            }
+
+            getSkillsForTopic(subject, topic) {
+                const skillsMap = {
+                    mathematics: {
+                        geometry: ['area calculations', 'perimeter formulas', 'angle relationships'],
+                        statistics: ['data interpretation', 'probability', 'graph analysis']
+                    },
+                    science: {
+                        chemistry: ['chemical equations', 'molecular structure', 'reaction types'],
+                        physics: ['force calculations', 'energy concepts', 'wave properties']
+                    },
+                    english: {
+                        grammar: ['sentence structure', 'punctuation', 'verb tenses'],
+                        literature: ['theme analysis', 'character development', 'symbolism']
+                    }
+                };
+
+                return skillsMap[subject]?.[topic] || ['fundamental concepts'];
+            }
+
+            // Real-time feedback display
+            displayFeedback(feedback) {
+                const container = document.getElementById('feedbackContainer');
+                const feedbackElement = this.createFeedbackElement(feedback);
+                container.insertBefore(feedbackElement, container.firstChild);
+                
+                // Animate the new feedback
+                feedbackElement.style.opacity = '0';
+                feedbackElement.style.transform = 'translateY(-20px)';
+                
+                setTimeout(() => {
+                    feedbackElement.style.opacity = '1';
+                    feedbackElement.style.transform = 'translateY(0)';
+                    feedbackElement.style.transition = 'all 0.5s ease';
+                }, 100);
+            }
+
+            createFeedbackElement(feedback) {
+                const element = document.createElement('div');
+                element.className = feedback-item ${feedback.type};
+                element.setAttribute('data-type', feedback.type === 'neutral' ? 'improvement' : feedback.type);
+                
+                element.innerHTML = `
+                    <div class="feedback-meta">${feedback.subject} • ${this.formatTime(feedback.timestamp)}</div>
+                    <div class="feedback-content">${feedback.content}</div>
+                    <div class="feedback-suggestion">💡 ${feedback.suggestions[0]}</div>
+                `;
+                
+                return element;
+            }
+
+            formatTime(timestamp) {
+                const now = new Date();
+                const diff = now - timestamp;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                
+                if (hours < 1) return 'Just now';
+                if (hours < 24) return ${hours} hour${hours > 1 ? 's' : ''} ago;
+                
+                const days = Math.floor(hours / 24);
+                return ${days} day${days > 1 ? 's' : ''} ago;
+            }
+        }
+
+        // Initialize the feedback system
+        const feedbackSystem = new PersonalizedFeedbackSystem();
+
+        // Filter feedback items
+        function filterFeedback(type) {
+            feedbackSystem.currentFilter = type;
+            
+            const items = document.querySelectorAll('#feedbackContainer .feedback-item');
+            items.forEach(item => {
+                if (type === 'all' || item.getAttribute('data-type') === type) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update active tab style
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase() === type) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Generate new AI insights
+        function generateNewInsights() {
+            const insights = feedbackSystem.generateAIInsights();
+            const container = document.getElementById('feedbackContainer');
+            container.innerHTML = ''; // Clear existing insights
+            
+            insights.forEach(insight => {
+                const element = document.createElement('div');
+                element.className = 'feedback-item';
+                element.style.background = 'rgba(255,255,255,0.8)';
+                element.style.border = 'none';
+                element.innerHTML = `<div class="feedback-content"><strong>${insight.type.replace('_', ' ').toUpperCase()}:</strong> ${insight.content}</div>`;
+                container.appendChild(element);
+            });
+        }
+
+        // View detailed skill analysis
+        function viewDetailedSkillAnalysis() {
+            alert('Detailed skill analysis feature is under development.');
+        }
+
+        // Start next step in learning path
+        function startLearningPath() {
+            alert('Starting next step in your personalized learning path.');
+        }
+
+        // Toggle chart view between daily and weekly
+        function toggleChartView() {
+            const button = document.querySelector('.btn-secondary');
+            const isWeekly = button.textContent.includes('Weekly');
+            
+            button.textContent = isWeekly ? 'Switch to Daily View' : 'Switch to Weekly View';
+            // TODO: Implement chart data toggle
+        }
+
+        // Export progress report
+        function exportProgress() {
+            alert('Progress report exported successfully!');
+        }
+
+        // Simulate real-time updates (e.g., new feedback received)
+        simulateRealTimeUpdates() {
+            setInterval(() => {
+                const newFeedback = this.generatePersonalizedFeedback(
+                    'Mathematics',
+                    { score: Math.floor(Math.random() * 100), trend: 'improving' },
+                    { weakArea: 'geometry', skill: 'problem-solving' }
+                );
+                
+                // Auto-filter to show all feedback
+                this.currentFilter = 'all';
+                this.displayFeedback(newFeedback);
+                this.updateDashboard();
+            }, 10000); // New feedback every 10 seconds
+        }
+
+        // Update dashboard elements (e.g., scores, progress bars)
+        updateDashboard() {
+            document.getElementById('overallScore').textContent = this.calculateOverallScore();
+            document.getElementById('completedLessons').textContent = this.calculateCompletedLessons();
+            document.getElementById('skillsImproved').textContent = this.calculateSkillsImproved();
+            document.getElementById('weeklyProgress').textContent = this.calculateWeeklyProgress();
+            
+            // Update subject performance bars
+            this.updatePerformanceBars();
+        }
+
+        calculateOverallScore() {
+            const totalScore = Object.values(this.studentData.performanceData).reduce((sum, data) => sum + data.score, 0);
+            return Math.round(totalScore / Object.keys(this.studentData.performanceData).length);
+        }
+
+        calculateCompletedLessons() {
+            return Math.floor(Math.random() * 30);
+        }
+
+        calculateSkillsImproved() {
+            return Math.floor(Math.random() * 15);
+        }
+
+        calculateWeeklyProgress() {
+            return `${Math.floor(Math.random() * 20) - 10}%`;
+        }
+
+        updatePerformanceBars() {
+            const subjects = ['mathematics', 'science', 'english'];
+            subjects.forEach(subject => {
+                const score = this.studentData.performanceData[subject]?.score || 0;
+                const bar = document.querySelector(`.progress-bar[data-subject="${subject}"] .progress-fill`);
+                if (bar) {
+                    bar.style.width = `${score}%`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

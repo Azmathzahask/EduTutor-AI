@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EduTutor AI - Home</title>
+  <style>
+    :root {
+      --color-bg: #fff;
+      --color-text: #111;
+      --color-yellow: #ffe800;
+      --color-yellow-dark: #ffd600;
+      --border-radius: 1.25rem;
+      --shadow-light: 0 8px 32px rgba(200, 180, 80, 0.10);
+      --transition: 0.2s cubic-bezier(.4,0,.2,1);
+      --max-width: 1200px;
+    }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: "Inter", Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #fff;
+      box-shadow: var(--shadow-light);
+      padding: 1.2rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #bfa100;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 8px #ffe80044;
+      text-decoration: none;
+      user-select: none;
+    }
+    nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    nav a {
+      color: var(--color-text);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1.2rem;
+      border-radius: 0.5rem;
+      transition: background var(--transition), color var(--transition);
+    }
+    nav a.cta {
+      background: var(--color-yellow);
+      color: #111;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px #ffe80055;
+    }
+    nav a.cta:hover,
+    nav a.cta:focus {
+      background: var(--color-yellow-dark);
+      color: #111;
+    }
+    nav a:hover,
+    nav a:focus {
+      background: #fffde7;
+      color: #bfa100;
+    }
+    .hero {
+      background: #fff url('https://cdn-icons-png.flaticon.com/512/4144/4144774.png') no-repeat right 5% center/160px auto;
+      padding: 5rem 0 4rem 0;
+      text-align: left;
+      border-bottom: 2px solid var(--color-yellow);
+    }
+    .hero h1 {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: #111;
+      margin-bottom: 1rem;
+      max-width: 700px;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: #222;
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+    }
+    .cta-btn {
+      background: var(--color-yellow);
+      color: #111;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 1rem 2.5rem;
+      border-radius: var(--border-radius);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: none;
+      box-shadow: 0 6px 10px #ffe80055;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .cta-btn:hover,
+    .cta-btn:focus {
+      background: var(--color-yellow-dark);
+      color: #111;
+      transform: scale(1.05);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(140px,1fr));
+      gap: 1.2rem;
+      margin-top: 2rem;
+      width: 100%;
+    }
+    .feature-card {
+      background: #fff;
+      color: #111;
+      border-radius: var(--border-radius);
+      box-shadow: none;
+      padding: 0.7rem 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: center;
+      border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 140px;
+      height: 140px;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .feature-card img {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 0.5rem;
+      border-radius: 0.5rem;
+      background: #fff;
+      border: 1px solid #eee;
+      box-shadow: none;
+    }
+    hr.section-break {
+      border: none;
+      border-top: 2px solid #ffe800;
+      margin: 3rem 0 2rem 0;
+      width: 100vw;
+      max-width: 100vw;
+    }
+    footer {
+      background: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+      color: #111;
+      font-size: 0.95rem;
+      border-top: 2px solid var(--color-yellow);
+      margin-top: 3rem;
+    }
+    .loading-overlay {
+      position: fixed;
+      z-index: 9999;
+      inset: 0;
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s;
+    }
+    .loading-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .loading-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffe800;
+      animation: jump 0.7s infinite;
+    }
+    .loading-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    .loading-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    @keyframes jump {
+      0%, 100% { transform: translateY(0);}
+      50% { transform: translateY(-18px);}
+    }
+    @media (max-width: 900px) {
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .container {
+        padding: 0 1rem;
+      }
+    }
+    @media (max-width: 600px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 0 0.5rem;
+      }
+      .hero {
+        background-size: 90px auto;
+        padding: 2.5rem 0 2rem 0;
+      }
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+  <script>
+  // Show loader on navigation and for 3 seconds on page load
+  document.addEventListener('DOMContentLoaded', function () {
+    // Show loader for 3 seconds, then hide
+    setTimeout(function () {
+      document.getElementById('loading-overlay').style.display = 'none';
+    }, 3000);
+
+    // Add click event to all links
+    document.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        const href = link.getAttribute('href');
+        if (
+          href &&
+          !href.startsWith('#') &&
+          !href.startsWith('javascript:') &&
+          !link.hasAttribute('download') &&
+          link.target !== '_blank'
+        ) {
+          document.getElementById('loading-overlay').style.display = 'flex';
+        }
+      });
+    });
+  });
+  // Show loader immediately on navigation away (for SPA-like navigation)
+  window.addEventListener('beforeunload', function () {
+    document.getElementById('loading-overlay').style.display = 'flex';
+  });
+  </script>
+</head>
+<body>
+  <div id="loading-overlay" class="loading-overlay" style="display: flex;">
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+  <header>
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+      <span class="logo">EduTutor AI</span>
+      <nav>
+        <a href="#courses">Courses</a>
+        <a href="#assignments">Assignments</a>
+        <a href="feedback.html">Report</a>
+        <a href="#profile">
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Profile" style="width:28px;height:28px;vertical-align:middle;border-radius:50%;border:1.5px solid #ffe800;background:#fff;margin-right:4px;">
+          Profile
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="background: #fff;">
+    <div class="container">
+      <h1>Welcome to Your Dashboard</h1>
+      <p>Access your courses, assignments, reports, and profile all in one place.</p>
+      <a href="explainer.html" class="cta-btn">Start Learning!</a>
+    </div>
+  </section>
+
+
+  <section id="courses">
+    <div class="container">
+      <h2>Your Courses</h2>
+      
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 2rem; justify-content: flex-start;">
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 2rem 1.5rem; min-width: 180px; flex: 1 1 180px; max-width: 240px; display: flex; flex-direction: column; align-items: center;">
+          <img src="https://static.vecteezy.com/system/resources/thumbnails/020/399/902/small/maths-book-icon-vector.jpg" alt="AI" style="width:48px;height:48px;margin-bottom:1rem;">
+          <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">Maths</div>
+          <a href="#" class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;">View</a>
+        </div>
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 2rem 1.5rem; min-width: 180px; flex: 1 1 180px; max-width: 240px; display: flex; flex-direction: column; align-items: center;">
+          <img src="https://cdn-icons-png.flaticon.com/512/4144/4144337.png" alt="ML" style="width:48px;height:48px;margin-bottom:1rem;">
+          <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">Physics</div>
+          <a href="#" class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;">View</a>
+        </div>
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 2rem 1.5rem; min-width: 180px; flex: 1 1 180px; max-width: 240px; display: flex; flex-direction: column; align-items: center;">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6Fbj6cs3VSMr-3i9PL7UKUhUPj3_fvzycSQ&s" alt="Data Science" style="width:48px;height:48px;margin-bottom:1rem;">
+          <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">Chemistry</div>
+          <a href="#" class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;">View</a>
+        </div>
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 2rem 1.5rem; min-width: 180px; flex: 1 1 180px; max-width: 240px; display: flex; flex-direction: column; align-items: center;">
+          <img src="https://static-00.iconduck.com/assets.00/biology-icon-2048x2048-7qqg6hev.png" alt="DBMS" style="width:48px;height:48px;margin-bottom:1rem;">
+          <div style="font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;">Biology</div>
+          <a href="#" class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;">View</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-break">
+
+  <section id="assignments">
+    <div class="container">
+      <h2>Your Assignments</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 2rem; justify-content: flex-start;">
+        <!-- Maths Assignment 1 -->
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 1.5rem 1.2rem; min-width: 180px; flex: 1 1 220px; max-width: 260px; display: flex; flex-direction: column; align-items: flex-start;">
+          <div style="font-weight:700;font-size:1.08rem;margin-bottom:0.3rem;color:#bfa100;">Maths Assignment</div>
+          <div style="font-size:1rem;margin-bottom:0.7rem;">Topic: Dot Product</div>
+          <button class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;align-self:flex-end;">Attempt Now</button>
+        </div>
+        <!-- Maths Assignment 2 -->
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 1.5rem 1.2rem; min-width: 180px; flex: 1 1 220px; max-width: 260px; display: flex; flex-direction: column; align-items: flex-start;">
+          <div style="font-weight:700;font-size:1.08rem;margin-bottom:0.3rem;color:#bfa100;">Maths Assignment</div>
+          <div style="font-size:1rem;margin-bottom:0.7rem;">Topic: Vector Product</div>
+          <button class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;align-self:flex-end;">Attempt Now</button>
+        </div>
+        <!-- Biology Assignment -->
+        <div style="background: #fff; border: 1.5px solid #ffe800; border-radius: 1.25rem; box-shadow: 0 4px 16px #ffe80022; padding: 1.5rem 1.2rem; min-width: 180px; flex: 1 1 220px; max-width: 260px; display: flex; flex-direction: column; align-items: flex-start;">
+          <div style="font-weight:700;font-size:1.08rem;margin-bottom:0.3rem;color:#bfa100;">Biology Assignment</div>
+          <div style="font-size:1rem;margin-bottom:0.7rem;">Topic: Respiratory System</div>
+          <button class="cta-btn" style="padding:0.5rem 1.2rem;font-size:0.95rem;align-self:flex-end;">Attempt Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-break">
+
+  <section id="report">
+    <div class="container" style="display: flex; align-items: center; justify-content: center; gap: 3rem; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 260px; text-align: left;">
+        <h2>Your Report</h2>
+        <p>Analyze your performance and progress with detailed reports and analytics tailored for you.</p>
+        <a href="feedback.html" class="cta-btn" style="margin-top:1rem; padding:0.7rem 1.5rem; font-size:1rem; display:inline-block;">Go to Reports</a>
+      </div>
+      <img src="https://cdn-icons-png.flaticon.com/512/786/786695.png"
+           alt="Report illustration"
+           style="width: 220px; max-width: 40vw; border-radius: 1.25rem; box-shadow: 0 8px 32px rgba(200,180,80,0.10); background: #fff; border: 2px solid #ffe800; flex-shrink: 0;" />
+    </div>
+  </section>
+
+  
+
+
+  <footer>
+    &copy; 2025 EduTutor AI. All rights reserved.
+  </footer>
+</body>
+</html>
